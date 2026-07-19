@@ -74,7 +74,7 @@ app.post("/orders", async(req, res) => {
         const order = req.body;
 
         const result = await client
-            .db("FancyDB")
+            .db("Fancydb")
             .collection("orders")
             .insertOne(order);
 
