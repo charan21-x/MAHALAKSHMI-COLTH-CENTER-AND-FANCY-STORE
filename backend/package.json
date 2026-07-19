@@ -1,12 +1,22 @@
 {
-  "name": "fashion-store-backend",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.22.2"
-  }
+    "name": "MAHALAKSHMI CLOTH CENTER AND FANCY STORE-backend",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.6",
+        "express": "^4.22.2",
+        "mongodb": "^7.3.0"
+    },
+    "description": "",
+    "devDependencies": {
+        "jest": "^30.4.2",
+        "supertest": "^7.2.2"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs"
 }

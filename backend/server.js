@@ -1,143 +1,92 @@
-// ==========================
-// IMPORT PACKAGES
-// ==========================
-
 const express = require("express");
 const cors = require("cors");
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const uri = "mongodb://gudicharan73:fancystore7386@ac-g2gu6od-shard-00-00.ezinw3m.mongodb.net:27017,ac-g2gu6od-shard-00-01.ezinw3m.mongodb.net:27017,ac-g2gu6od-shard-00-02.ezinw3m.mongodb.net:27017/?ssl=true&replicaSet=atlas-oicj50-shard-0&authSource=admin&appName=fancystorecluster";
 
 const app = express();
-app.get("/", (req, res) => {
-    res.send('MAHALAKSHMI CLOTH CENTER AND FANCY STORE');
-});
+const PORT = 5003;
 
-// ==========================
-// MIDDLEWARE
-// ==========================
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Create Mongo Client
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    },
+});
+// Connect to MongoDB
+async function connectDB() {
+    try {
+        await client.connect();
+        await client.db("admin").command({ ping: 1 });
+        console.log("✅ MongoDB Connected Successfully");
+    } catch (error) {
+        console.error("❌ MongoDB Connection Error:");
+        console.error(error);
+        console.error("Message:", error.message);
+        console.error("Code:", error.code);
+    }
+}
+connectDB();
 
-// ==========================
-// SAMPLE PRODUCTS DATABASE
-// ==========================
-
-const products = [
-
-  {
-    id: 1,
-    name: "Stylish T-Shirt",
-    price: 799,
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800"
-  },
-
-  {
-    id: 2,
-    name: "Fashion Hoodie",
-    price: 1499,
-    image:
-      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800"
-  },
-
-  {
-    id: 3,
-    name: "Casual Jacket",
-    price: 2499,
-    image:
-      "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800"
-  },
-
-  {
-    id: 4,
-    name: "Modern Jeans",
-    price: 1999,
-    image:
-      "https://images.unsplash.com/photo-1523398002811-999ca8dec234?q=80&w=800"
-  }
-
-];
-
-
-// ==========================
-// HOME ROUTE
-// ==========================
-
+// Test Route
 app.get("/", (req, res) => {
-
-  res.send("Fashion Store Backend Running");
-
+    res.send("Backend Running Successfully");
 });
+app.get('/collections', async(req, res) => {
+    try {
+        const collections = await client
+            .db("@fancyDB")
+            .listCollections()
+            .toArray();
 
-
-// ==========================
-// GET PRODUCTS API
-// ==========================
-
-app.get("/products", (req, res) => {
-
-  res.json(products);
-
+        res.json(collections);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
-
-
-// ==========================
-// ADD PRODUCT API
-// ==========================
-
-app.post("/products", (req, res) => {
-
-  const newProduct = req.body;
-
-  products.push(newProduct);
-
-  res.json({
-    message: "Product Added Successfully",
-    product: newProduct
-  });
-
+app.get('/databases', async(req, res) => {
+    try {
+        const dbs = await client.db().admin().listDatabases();
+        res.json(dbs);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
+// Add Product
+app.get("/products", async(req, res) => {
+    try {
+        const products = await client
+            .db("@fancyDB")
+            .collection("sarees and fancy items")
+            .find({})
+            .toArray();
 
-
-// ==========================
-// DELETE PRODUCT API
-// ==========================
-
-app.delete("/products/:id", (req, res) => {
-
-  const productId = parseInt(req.params.id);
-
-  const productIndex = products.findIndex(
-    (product) => product.id === productId
-  );
-
-  if (productIndex !== -1) {
-
-    products.splice(productIndex, 1);
-
-    res.json({
-      message: "Product Deleted Successfully"
-    });
-
-  } else {
-
-    res.status(404).json({
-      message: "Product Not Found"
-    });
-
-  }
-
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
+//order root
+app.post("/orders", async(req, res) => {
+    try {
+        const order = req.body;
 
+        const result = await client
+            .db("fancyDB")
+            .collection("orders")
+            .insertOne(order);
 
-// ==========================
-// SERVER
-// ==========================
-
-const PORT = 5000;
-
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// Start Server
 app.listen(PORT, () => {
-
-  console.log(`Server Running On Port ${PORT}`);
-
+    console.log(`🚀 Server running on port ${PORT}`);
 });
