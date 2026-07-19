@@ -2,9 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = "mongodb://gudicharan73:fancystore7386@ac-g2gu6od-shard-00-00.ezinw3m.mongodb.net:27017,ac-g2gu6od-shard-00-01.ezinw3m.mongodb.net:27017,ac-g2gu6od-shard-00-02.ezinw3m.mongodb.net:27017/?ssl=true&replicaSet=atlas-oicj50-shard-0&authSource=admin&appName=fancystorecluster";
-
 const app = express();
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -76,7 +74,7 @@ app.post("/orders", async(req, res) => {
         const order = req.body;
 
         const result = await client
-            .db("fancyDB")
+            .db("FancyDB")
             .collection("orders")
             .insertOne(order);
 
