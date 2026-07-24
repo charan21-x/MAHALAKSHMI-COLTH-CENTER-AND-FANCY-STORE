@@ -83,6 +83,19 @@ app.post("/orders", async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+app.get("/orders", async(req, res) => {
+    try {
+        const orders = await client
+            .db("Fancydb")
+            .collection("orders")
+            .find({})
+            .toArray();
+
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 // Start Server
 const PORT = process.env.PORT || 5003;
 
